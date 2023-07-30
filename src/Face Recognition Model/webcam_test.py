@@ -1,4 +1,4 @@
-from face_detection import FaceRecognition
+from model import FaceRecognition
 import cv2 as cv
 
 train_path = "C:/Users/Admin/OneDrive - hcmut.edu.vn/powerfulFaceRecognition/train/"
