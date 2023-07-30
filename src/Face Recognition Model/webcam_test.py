@@ -2,7 +2,6 @@ from face_detection import FaceRecognition
 import cv2 as cv
 
 train_path = "C:/Users/Admin/OneDrive - hcmut.edu.vn/powerfulFaceRecognition/train/"
-test_path = "C:/Users/Admin/OneDrive - hcmut.edu.vn/powerfulFaceRecognition/test/"
 
 recognizer = FaceRecognition()
 trainX, trainY = recognizer.LoadDataset(train_path)
