@@ -5,6 +5,8 @@ import threading
 import joblib
 from model import FaceRecognition
 from keras_facenet import FaceNet
+from paho.mqtt import client as mqtt_client
+
 
 model_load_path = 'face_recognition_model.pkl'
 loaded_recognizer = FaceRecognition()
@@ -14,12 +16,13 @@ loaded_recognizer.load_model(model_load_path)
 # Global variables and locks for thread synchronization
 frame = None
 faces = None
+counter = 0
 exit_event = threading.Event()
 frame_lock = threading.Lock()
 faces_lock = threading.Lock()
 
 # Define the interval for face detection (perform detection every n frames)
-video = "http://192.168.1.10/cam-lo.jpg"
+video = "http://192.168.1.5/cam-lo.jpg"
 def fetch_frames_from_camera():
     global frame
     while not exit_event.is_set():
@@ -69,6 +72,38 @@ def display_frames():
             exit_event.set()
 
     cv.destroyAllWindows()
+
+#-----------mqtt protocol----------------#
+
+#broker config
+broker = 'broker.hivemq.com'
+port = 1883
+topic = "to-esp8266"
+client_id = "quandinh10"
+
+def connect_mqtt():
+    def on_connect(client, userdata, flags, rc):
+        if rc == 0:
+            print("Connected to MQTT Broker!")
+        else:
+            print("Failed to connect, return code %d\n", rc)
+
+    client = mqtt_client.Client(client_id)
+    client.on_connect = on_connect
+    client.connect(broker, port)
+    return client
+
+
+def publish(client):
+    return
+
+def run():
+    client = connect_mqtt()
+    client.loop_start()
+    publish(client)
+    client.loop_stop()
+
+
 
 # Create and start the threads
 fetch_thread = threading.Thread(target=fetch_frames_from_camera)
