@@ -7,7 +7,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import Normalizer
 from sklearn.svm import SVC
 from keras_facenet import FaceNet
-
+import joblib
 
 class FaceRecognition:
     def __init__(self): 
@@ -147,3 +147,22 @@ class FaceRecognition:
         yhat_proba = self.clf.predict_proba(X)
         name = self.out_encoder.inverse_transform(yhat_class)
         return name[0], np.max(yhat_proba[0])
+    
+    def save_model(self, save_path):
+        model_data = {
+            'detector': self.detector,
+            'clf': self.clf,
+            'out_encoder': self.out_encoder,
+            'in_encoder': self.in_encoder,
+            'database': self.database
+        }
+        joblib.dump(model_data, save_path)
+    
+    def load_model(self, load_path):
+        loaded_model_data = joblib.load(load_path)
+        self.detector = loaded_model_data['detector']
+        self.model = FaceNet()
+        self.clf = loaded_model_data['clf']
+        self.out_encoder = loaded_model_data['out_encoder']
+        self.in_encoder = loaded_model_data['in_encoder']
+        self.database = loaded_model_data['database']
