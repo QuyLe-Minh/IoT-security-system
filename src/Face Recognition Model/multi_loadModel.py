@@ -51,14 +51,18 @@ def publish(client):
 
 
 # Define the interval for face detection (perform detection every n frames)
-video = "http://192.168.1.9/cam-lo.jpg"
+# video = "http://192.168.1.9/cam-lo.jpg"
+video = cv.VideoCapture(0)
 def fetch_frames_from_camera():
     global frame
     while not exit_event.is_set():
-        response = requests.get(video)
-        if response.status_code == 200:
-            img_array = np.array(bytearray(response.content),dtype=np.uint8)
-            frame = cv.imdecode(img_array,-1)
+        isTrue,frame = video.read()
+        if not isTrue:
+            continue
+        # response = requests.get(video)
+        # if response.status_code == 200:
+        #     img_array = np.array(bytearray(response.content),dtype=np.uint8)
+        #     frame = cv.imdecode(img_array,-1)
 
 def process_frames():
     global frame, faces
@@ -75,7 +79,6 @@ def display_frames():
 
     while not exit_event.is_set():
         if frame is not None:
-            display_frame = frame.copy()
             # Draw face rectangles and labels on the display_frame
             with faces_lock:
                 if faces is not None:
@@ -90,27 +93,26 @@ def display_frames():
                             else:
                                 if (name=="Nhan"):
                                     counter[0]+=1
-                                    if (counter[0]==10):
+                                    if (counter[0]==5):
                                         publish(client)
                                 elif (name=="Quan"):
                                     counter[1]+=1
-                                    if (counter[1]==10):
+                                    if (counter[1]==5):
                                         publish(client)
                                 elif (name=="Quy"):
                                     counter[2]+=1
-                                    if (counter[2]==10):
+                                    if (counter[2]==5):
                                         publish(client)
                                 else:
                                     counter[3]+=1
-                                    if (counter[3]==10):
+                                    if (counter[3]==5):
                                         publish(client)
-                            cv.rectangle(display_frame, (x, y), (x+w, y+h), (255, 0, 0), thickness=2)
-                            cv.putText(display_frame, name, (x, y-20), cv.FONT_HERSHEY_COMPLEX, 1.0, (0, 255, 0), 2)
+                            cv.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), thickness=2)
+                            cv.putText(frame, name, (x, y-20), cv.FONT_HERSHEY_COMPLEX, 1.0, (0, 255, 0), 2)
 
                     except Exception as e:
                         print("Error:", e)
-            display_frame = cv.resize(display_frame, (400,400))
-            cv.imshow("Recognizer", display_frame)
+            cv.imshow("Recognizer", frame)
 
         # Check for 'q' key press to exit the program
         if cv.waitKey(1) & 0xFF == ord('q'):

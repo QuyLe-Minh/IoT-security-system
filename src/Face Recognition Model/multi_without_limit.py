@@ -19,7 +19,7 @@ frame_lock = threading.Lock()
 faces_lock = threading.Lock()
 
 # Define the interval for face detection (perform detection every n frames)
-video = "http://192.168.1.9/cam-mid.jpg"
+video = "http://192.168.1.9/cam-lo.jpg"
 def fetch_frames_from_camera():
     global frame
     while not exit_event.is_set():
