@@ -51,7 +51,7 @@ def publish(client):
 
 
 # Define the interval for face detection (perform detection every n frames)
-video = "http://192.168.1.5/cam-lo.jpg"
+video = "http://192.168.1.9/cam-lo.jpg"
 def fetch_frames_from_camera():
     global frame
     while not exit_event.is_set():
@@ -92,15 +92,15 @@ def display_frames():
                                     counter[0]+=1
                                     if (counter[0]==10):
                                         publish(client)
-                                if (name=="Quan"):
+                                elif (name=="Quan"):
                                     counter[1]+=1
                                     if (counter[1]==10):
                                         publish(client)
-                                if (name=="Quy"):
+                                elif (name=="Quy"):
                                     counter[2]+=1
                                     if (counter[2]==10):
                                         publish(client)
-                                if (name=="Thinh"):
+                                else:
                                     counter[3]+=1
                                     if (counter[3]==10):
                                         publish(client)

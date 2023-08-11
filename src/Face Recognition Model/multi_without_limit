@@ -19,7 +19,7 @@ frame_lock = threading.Lock()
 faces_lock = threading.Lock()
 
 # Define the interval for face detection (perform detection every n frames)
-video = "http://192.168.1.10/cam-lo.jpg"
+video = "http://192.168.1.9/cam-mid.jpg"
 def fetch_frames_from_camera():
     global frame
     while not exit_event.is_set():
@@ -61,7 +61,7 @@ def display_frames():
 
                     except Exception as e:
                         print("Error:", e)
-            display_frame = cv.resize(display_frame, (400,400))
+
             cv.imshow("Recognizer", display_frame)
 
         # Check for 'q' key press to exit the program
