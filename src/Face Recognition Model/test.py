@@ -20,10 +20,10 @@ os.makedirs(output_dir, exist_ok=True)
 os.makedirs(face_dir, exist_ok=True)
 
 # Global variables and locks for thread synchronization
-counter=[0,0,0,0]
 
-video = cv.VideoCapture(0)
+
 def fetch_frames_from_camera():
+    video = cv.VideoCapture(0)
     for i in range(0,5):
         isTrue,frame = video.read()
         if not isTrue: break
@@ -31,8 +31,7 @@ def fetch_frames_from_camera():
         cv.imwrite(frame_filename, frame)
     video.release()
 
-def display_frames():
-    count = 0
+def display_frames(client: mqtt_client):
     frame_files = sorted(os.listdir(output_dir))
     for frame_file in frame_files:
         frame_path = os.path.join(output_dir, frame_file)
@@ -45,7 +44,8 @@ def display_frames():
             name, prob = loaded_recognizer.recognition(face)
             if prob < 0.5:
                 name = "UNKNOWN"
-
+            else:
+                publish(client)
             cv.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), thickness=2)
             cv.putText(frame, name, (x, y-20), cv.FONT_HERSHEY_COMPLEX, 1.0, (0, 255, 0), 2)
         else:
@@ -54,7 +54,7 @@ def display_frames():
         cv.imshow("Recognizer", frame)
         if cv.waitKey(1) & 0xFF == ord('q'):
             break
-
+    cv.destroyAllWindows()
 #-----------mqtt protocol----------------#
 
 #broker config
@@ -63,7 +63,6 @@ port = 1883
 topic_send = "to-esp8266"
 topic_receive = "detect-signal"
 client_id = "quandinh10"
-counter = [0,0,0,0]
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
@@ -75,17 +74,15 @@ def connect_mqtt():
     client.on_connect = on_connect
     client.connect(broker, port)
     return client
-def publish(client):
-    global counter
+def publish(client: mqtt_client):
     client.publish(topic_send,"open")
-    counter = [0,0,0,0]
 
 def subscribe(client: mqtt_client):
     def on_message(client, userdata, msg):
         print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
         if (msg.payload.decode("utf-8") == "detect"):
             fetch_frames_from_camera()
-            display_frames()
+            display_frames(client)
         elif (msg.payload.decode("utf-8") == "quit"):
             client.loop_stop()
 
