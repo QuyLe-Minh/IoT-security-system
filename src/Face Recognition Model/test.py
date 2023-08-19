@@ -1,8 +1,5 @@
 import cv2 as cv
 import numpy as np
-import requests
-import threading
-import joblib
 from model import FaceRecognition
 from keras_facenet import FaceNet
 from paho.mqtt import client as mqtt_client
@@ -42,7 +39,7 @@ def display_frames(client: mqtt_client):
             x, y, w, h = faces[0]["box"]
             face = frame[y-10:y+h+10, x-10:x+w+10]
             name, prob = loaded_recognizer.recognition(face)
-            if prob < 0.5:
+            if prob < 0.3:
                 name = "UNKNOWN"
             else:
                 publish(client)

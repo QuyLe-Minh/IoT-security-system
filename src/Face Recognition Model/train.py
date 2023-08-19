@@ -1,8 +1,5 @@
 import cv2 as cv
 import numpy as np
-import requests
-import threading
-import joblib
 from model import FaceRecognition
 
 train_path = "C:/Users/dinhq/Desktop/IoT-security-system-main/src/Face Recognition Model/train/"
