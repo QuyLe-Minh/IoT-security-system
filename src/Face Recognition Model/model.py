@@ -29,7 +29,7 @@ class FaceRecognition:
         """
         image = Image.open(fileName)
         image = image.convert("RGB")
-        image = np.asarray(image)/255
+        image = np.asarray(image)
         results = self.detector.detect_faces(image)
         x1, y1, width, height = results[0]["box"]
         x1, y1 = abs(x1), abs(y1)
