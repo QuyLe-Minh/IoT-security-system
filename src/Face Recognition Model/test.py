@@ -10,32 +10,17 @@ model_load_path = 'face_recognition_model.pkl'
 loaded_recognizer = FaceRecognition()
 loaded_recognizer.load_model(model_load_path)
 
-#output folder to save frame
-output_dir = "frame_output"
-face_dir = "face_output"
-os.makedirs(output_dir, exist_ok=True)
-os.makedirs(face_dir, exist_ok=True)
 
 # Global variables and locks for thread synchronization
 
 
-def fetch_frames_from_camera():
+def display_frames(client: mqtt_client):
     video = cv.VideoCapture(0)
     for i in range(0,5):
         isTrue,frame = video.read()
         if not isTrue: break
-        frame_filename = os.path.join(output_dir, f'frame_{i:04d}.jpg')
-        cv.imwrite(frame_filename, frame)
-    video.release()
-
-def display_frames(client: mqtt_client):
-    frame_files = sorted(os.listdir(output_dir))
-    for frame_file in frame_files:
-        frame_path = os.path.join(output_dir, frame_file)
-        frame = cv.imread(frame_path)
         faces = loaded_recognizer.detector.detect_faces(frame)
-
-        if len(faces) > 0:
+        try:
             x, y, w, h = faces[0]["box"]
             face = frame[y-10:y+h+10, x-10:x+w+10]
             name, prob = loaded_recognizer.recognition(face)
@@ -45,13 +30,13 @@ def display_frames(client: mqtt_client):
                 publish(client)
             cv.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), thickness=2)
             cv.putText(frame, name, (x, y-20), cv.FONT_HERSHEY_COMPLEX, 1.0, (0, 255, 0), 2)
-        else:
-            print("No faces detected in the current frame.")
-
+        except:
+            continue
         cv.imshow("Recognizer", frame)
         if cv.waitKey(1) & 0xFF == ord('q'):
             break
     cv.destroyAllWindows()
+    video.release()
 #-----------mqtt protocol----------------#
 
 #broker config
@@ -78,7 +63,6 @@ def subscribe(client: mqtt_client):
     def on_message(client, userdata, msg):
         print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
         if (msg.payload.decode("utf-8") == "detect"):
-            fetch_frames_from_camera()
             display_frames(client)
         elif (msg.payload.decode("utf-8") == "quit"):
             client.loop_stop()
