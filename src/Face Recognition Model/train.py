@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 from model import FaceRecognition
 
-train_path = r"C:\\Users\\dinhq\Desktop\\iot-clone\\IoT-security-system\\src\\Face Recognition Model\\train"
+train_path = "C:/Users/dinhq/Desktop/IoT-security-system-main/src/Face Recognition Model/train/"
 # model_save_path = "C:/Users/dinhq/Desktop/IoT-security-system-main/src/Face Recognition Model/"
 # Instantiate your FaceRecognition class
 recognizer = FaceRecognition()
