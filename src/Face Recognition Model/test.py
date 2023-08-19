@@ -1,7 +1,5 @@
 import cv2 as cv
-import numpy as np
 from model import FaceRecognition
-from keras_facenet import FaceNet
 from paho.mqtt import client as mqtt_client
 import os
 
