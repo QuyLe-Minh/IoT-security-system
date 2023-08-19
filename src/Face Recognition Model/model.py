@@ -155,14 +155,12 @@ class FaceRecognition:
             'out_encoder': self.out_encoder,
             'in_encoder': self.in_encoder,
             'database': self.database,
-            "model": self.model
         }
         joblib.dump(model_data, save_path)
     
     def load_model(self, load_path):
         loaded_model_data = joblib.load(load_path)
         self.detector = loaded_model_data['detector']
-        self.model = loaded_model_data['model']
         self.clf = loaded_model_data['clf']
         self.out_encoder = loaded_model_data['out_encoder']
         self.in_encoder = loaded_model_data['in_encoder']
