@@ -5,6 +5,7 @@ from keras_facenet import FaceNet
 from paho.mqtt import client as mqtt_client
 import os
 
+
 #load model
 model_load_path = 'face_recognition_model.pkl'
 loaded_recognizer = FaceRecognition()
