@@ -40,9 +40,9 @@ def display_frames(client: mqtt_client):
             cv.imshow("Recognizer", frame)
             if cv.waitKey(1) & 0xFF == ord('q'):
                 break
-        detect_event.clear()
-        cv.destroyAllWindows()
-        video.release()
+            detect_event.clear()
+            cv.destroyAllWindows()
+            video.release()
         continue
 #-----------mqtt protocol----------------#
 
@@ -76,7 +76,7 @@ def on_message(client,userdata,msg):
 client = connect_mqtt()
 client.subscribe(topic_receive)
 client.on_message = on_message
-client.loop_background()
+client.loop_start()
 recognition_thread = threading.Thread(target=display_frames, args=(client,))
 
 
