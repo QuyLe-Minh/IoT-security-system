@@ -5,8 +5,8 @@ from keras_facenet import FaceNet
 from paho.mqtt import client as mqtt_client
 import os
 import threading
-
-
+from Adafruit_IO import Client
+aio = Client('quandinh10','aio_zGuF35Mldcl20zVSQFWG9fOzGt8Q')
 #load model
 model_load_path = 'face_recognition_model.pkl'
 loaded_recognizer = FaceRecognition()
