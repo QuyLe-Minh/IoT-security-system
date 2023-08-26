@@ -16,28 +16,23 @@ loaded_recognizer.load_model(model_load_path)
 
 def display_frames(aio: Client):
     video = cv.VideoCapture(0)
-    for i in range(0,5):
-        isTrue,frame = video.read()
-        if not isTrue: break
-
-        faces = loaded_recognizer.detector.detect_faces(frame)
-        try:
-            x, y, w, h = faces[0]["box"]
-            face = frame[y-10:y+h+10, x-10:x+w+10]
-            name, prob = loaded_recognizer.recognition(face)
-            if prob < 0.3:
-                name = "UNKNOWN"
-            else:
-                aio.send_data("face-recognize","open")
-            cv.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), thickness=2)
-            cv.putText(frame, name, (x, y-20), cv.FONT_HERSHEY_COMPLEX, 1.0, (0, 255, 0), 2)
-        except:
-            continue
-        cv.imshow("Recognizer", frame)
-        if cv.waitKey(1) & 0xFF == ord('q'):
-            break
-        cv.destroyAllWindows()
-        video.release()
+    isTrue,frame = video.read()
+    if not isTrue: return
+    faces = loaded_recognizer.detector.detect_faces(frame)
+    try:
+        x, y, w, h = faces[0]["box"]
+        face = frame[y-10:y+h+10, x-10:x+w+10]
+        name, prob = loaded_recognizer.recognition(face)
+        if prob < 0.3:
+            aio.send_data("face-recognize","Stranger")
+        else:
+            aio.send_data("face-recognize",name)
+    except:
+        aio.send_data("face-recognize","Stranger")
+        return
+    
+    cv.destroyAllWindows()
+    video.release()
 #-----------mqtt protocol----------------#
 
     
@@ -54,14 +49,15 @@ def connect():
     client.loop_background()        
     while True:
         # check_sync.acquire()
-        data = aio.receive('detect-signal').value
-        if (int(data)==1):
-            print("detect")
-            display_frames(aio)
+        try:
+            data = aio.receive_next('detect-signal').value
+        except:
+            continue
+        display_frames(aio)
             # check=False
         # check_sync.release()
         # time.sleep(1)
-
+        
 
 
 if __name__ == "__main__":
