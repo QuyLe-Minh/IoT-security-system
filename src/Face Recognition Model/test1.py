@@ -3,10 +3,7 @@ import numpy as np
 from model import FaceRecognition
 from keras_facenet import FaceNet
 from paho.mqtt import client as mqtt_client
-import os
 import threading
-from Adafruit_IO import Client
-aio = Client('quandinh10','aio_zGuF35Mldcl20zVSQFWG9fOzGt8Q')
 #load model
 model_load_path = 'face_recognition_model.pkl'
 loaded_recognizer = FaceRecognition()
@@ -20,9 +17,8 @@ def display_frames(client: mqtt_client):
     while (not exit_event.is_set()):
         if detect_event.is_set():
             video = cv.VideoCapture(0)
-            for i in range(0,5):
-                isTrue,frame = video.read()
-                if not isTrue: break
+            isTrue,frame = video.read()
+            if not isTrue: break
 
             faces = loaded_recognizer.detector.detect_faces(frame)
             try:
