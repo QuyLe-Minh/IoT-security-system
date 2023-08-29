@@ -5,6 +5,7 @@ from keras_facenet import FaceNet
 from paho.mqtt import client as mqtt_client
 from Adafruit_IO import Client, MQTTClient
 from connect import *
+from face_recognize_db import * 
 # import threading
 import time
 #load model
@@ -24,11 +25,12 @@ def display_frames(aio: Client):
         face = frame[y-10:y+h+10, x-10:x+w+10]
         name, prob = loaded_recognizer.recognition(face)
         if prob < 0.3:
-            aio.send_data("face-recognize","Stranger")
-        else:
-            aio.send_data("face-recognize",name)
+            name="Stranger"            
+        aio.send_data("face-recognize",name)
+        collection.insert_one({"Date": datetime.now(), "Name": name})
     except:
         aio.send_data("face-recognize","Stranger")
+        collection.insert_one({"Date": datetime.now(), "Name": "Stranger"})
         return
     
     cv.destroyAllWindows()
